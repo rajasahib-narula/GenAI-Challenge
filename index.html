@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayfair Assembly Assistant - GenAI Innovation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sofia Pro', 'Poppins', sans-serif;
+            background-color: #FFFFFF; /* Wayfair White */
+            color: #363038; /* Cast Iron */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; 
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 320px;
+            }
+        }
+        .card {
+            background-color: #FFFFFF; /* Wayfair White */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04); /* Softer shadow */
+            padding: 1.5rem; /* p-6 */
+            margin-bottom: 2rem; /* mb-8 */
+            border: 1px solid #F6F0F0; /* Wayfair Neutral border for cards */
+        }
+        h1 {
+            color: #7B189F; /* Wayfair Purple */
+        }
+        h2, h3 { /* Section titles and sub-titles */
+            color: #7B189F; /* Wayfair Purple */
+        }
+        h4, p, li, span, div { /* General text */
+             color: #363038; /* Cast Iron */
+        }
+        .accent-main-purple { color: #7B189F; } 
+        .accent-promo-red { color: #C30016; } 
+        .accent-highlight-purple { color: #7B189F; }
+
+
+        .problem-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #C30016; /* Promo Red */
+        }
+        .problem-card-bg {
+            background-color: #FAF2FF; /* Soft Purple */
+        }
+
+        .solution-step {
+            border: 2px solid #7B189F; /* Wayfair Purple */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #FAF2FF; /* Soft Purple */
+            text-align: left;
+        }
+        .solution-step-number {
+            background-color: #7B189F; /* Wayfair Purple */
+            color: #FFFFFF; /* Wayfair White */
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        .benefit-card {
+            background-color: #FAF2FF; /* Soft Purple */
+            border-left: 4px solid #7B189F; /* Wayfair Purple */
+            padding: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        .winner-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.375rem; /* rounded-md */
+            background-color: #FAF2FF; /* Soft Purple */
+            margin-bottom: 0.75rem;
+        }
+        .winner-icon {
+            color: #7B189F; /* Wayfair Purple */
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+         .llm-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* font-semibold */
+            margin: 0.25rem;
+            background-color: #F2DEFF; /* Accent Purple */
+            color: #7B189F; /* Wayfair Purple */
+        }
+        .text-wayfair-purple { color: #7B189F; }
+        .text-cast-iron { color: #363038; }
+        .text-promo-red { color: #C30016; }
+        .bg-soft-purple { background-color: #FAF2FF; }
+        .bg-accent-purple { background-color: #F2DEFF; }
+        .bg-wayfair-neutral { background-color: #F6F0F0; }
+
+        /* Styles for Gemini API Feature */
+        .gemini-feature input[type="text"], .gemini-feature textarea {
+            border: 1px solid #F2DEFF; /* Accent Purple */
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem; /* rounded-md */
+            width: 100%;
+            margin-bottom: 0.75rem;
+            color: #363038; /* Cast Iron */
+            background-color: #FFFFFF; /* Wayfair White */
+        }
+        .gemini-feature input[type="text"]::placeholder, .gemini-feature textarea::placeholder {
+            color: #7B189F; /* Wayfair Purple for placeholder */
+            opacity: 0.7;
+        }
+        .gemini-feature button {
+            background-color: #7B189F; /* Wayfair Purple */
+            color: #FFFFFF; /* Wayfair White */
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 600; /* font-semibold */
+            transition: background-color 0.2s;
+        }
+        .gemini-feature button:hover {
+            background-color: #5C107A; /* Darker Wayfair Purple */
+        }
+        .gemini-feature button:disabled {
+            background-color: #F2DEFF; /* Accent Purple */
+            color: #7B189F; /* Wayfair Purple */
+            cursor: not-allowed;
+        }
+        #buttonText {
+            color: #FFFFFF; /* Ensure "Get Tips" text is white */
+        }
+        #geminiResponseArea {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #FAF2FF; /* Soft Purple */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px dashed #F2DEFF; /* Accent Purple */
+            min-height: 50px;
+            white-space: pre-wrap; /* To respect newlines from LLM */
+        }
+        .loading-spinner {
+            border: 4px solid #F2DEFF; /* Accent Purple */
+            border-top: 4px solid #7B189F; /* Wayfair Purple */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-2">Wayfair Assembly Assistant</h1>
+        <p class="text-xl text-cast-iron">Your AI-Powered Build Buddy for a Seamless Post-Purchase Experience</p>
+    </header>
+
+    <main class="max-w-5xl mx-auto">
+
+        <section id="problem" class="card">
+            <h2 class="text-3xl font-semibold mb-6 text-center">The <span class="accent-promo-red">Post-Purchase Pain Point</span></h2>
+            <p class="text-lg mb-8 text-center text-cast-iron">
+                Furniture assembly is a significant hurdle for many customers. Current instruction manuals can be confusing, leading to a cascade of negative outcomes that impact both customer satisfaction and Wayfair's bottom line.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="problem-card-bg p-4 rounded-lg">
+                    <div class="problem-icon">☹️</div>
+                    <h3 class="font-semibold text-lg text-wayfair-purple">Negative Reviews</h3>
+                    <p class="text-sm text-cast-iron">Frustration leads to poor product and brand perception.</p>
+                </div>
+                <div class="problem-card-bg p-4 rounded-lg">
+                    <div class="problem-icon">🛠️</div>
+                    <h3 class="font-semibold text-lg text-wayfair-purple">Damaged Items</h3>
+                    <p class="text-sm text-cast-iron">Incorrect assembly attempts cause product damage.</p>
+                </div>
+                <div class="problem-card-bg p-4 rounded-lg">
+                    <div class="problem-icon">📞</div>
+                    <h3 class="font-semibold text-lg text-wayfair-purple">High Service Costs</h3>
+                    <p class="text-sm text-cast-iron">Increased customer service calls for assembly help.</p>
+                </div>
+                <div class="problem-card-bg p-4 rounded-lg">
+                    <div class="problem-icon">📦</div>
+                    <h3 class="font-semibold text-lg text-wayfair-purple">More Returns</h3>
+                    <p class="text-sm text-cast-iron">Difficulties result in higher return rates.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="card">
+            <h2 class="text-3xl font-semibold mb-6 text-center">Our GenAI Solution: The <span class="accent-main-purple">Assembly Assistant</span></h2>
+            <p class="text-lg mb-4 text-center text-cast-iron">
+                Introducing the Wayfair Assembly Assistant – an AI-powered chatbot designed to transform the assembly experience. It's easily accessible via a QR code on product packaging or within the Wayfair app/website post-purchase.
+            </p>
+            <div class="text-center mb-6">
+                <span class="llm-tag">Powered by Gemini</span>
+                <span class="llm-tag">or Vertex AI Agent Builder</span>
+            </div>
+            <h3 class="text-2xl font-semibold mb-4 text-center">How It Works:</h3>
+            <div class="space-y-4">
+                <div class="solution-step flex items-start">
+                    <span class="solution-step-number">1</span>
+                    <div>
+                        <h4 class="font-semibold text-wayfair-purple">Comprehensive Training</h4>
+                        <p class="text-sm text-cast-iron">The AI is trained on all Wayfair assembly manuals, video tutorials, troubleshooting guides, and common customer assembly queries.</p>
+                    </div>
+                </div>
+                <div class="solution-step flex items-start">
+                    <span class="solution-step-number">2</span>
+                    <div>
+                        <h4 class="font-semibold text-wayfair-purple">Natural Language Interaction</h4>
+                        <p class="text-sm text-cast-iron">Customers ask questions naturally, like: <em>"I'm stuck on step 5 for product X,"</em> <em>"Which screw is part C?"</em> or <em>"Show me a video for attaching drawer slides."</em></p>
+                    </div>
+                </div>
+                <div class="solution-step flex items-start">
+                    <span class="solution-step-number">3</span>
+                    <div>
+                        <h4 class="font-semibold text-wayfair-purple">Instant, Multi-Modal Guidance</h4>
+                        <p class="text-sm text-cast-iron">The AI provides immediate step-by-step help using text, images, or short video clips tailored to the user's specific query.</p>
+                    </div>
+                </div>
+                <div class="solution-step flex items-start">
+                    <span class="solution-step-number">4</span>
+                    <div>
+                        <h4 class="font-semibold text-wayfair-purple">Proactive Support & Clarification</h4>
+                        <p class="text-sm text-cast-iron">Offers clarifications for confusing instructions and provides proactive tips to prevent common mistakes.</p>
+                    </div>
+                </div>
+                <div class="solution-step flex items-start">
+                    <span class="solution-step-number">5</span>
+                    <div>
+                        <h4 class="font-semibold text-wayfair-purple">Seamless Escalation</h4>
+                        <p class="text-sm text-cast-iron">If needed, the AI can seamlessly escalate the issue to a human agent, providing full context of the assembly problem.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="geminiHelp" class="card gemini-feature">
+            <h2 class="text-3xl font-semibold mb-2 text-center">✨ Get <span class="accent-main-purple">Instant Assembly Help</span> ✨</h2>
+            <p class="text-md mb-6 text-center text-cast-iron">
+                Stuck on a step? Need a quick tip? Describe your issue below and our AI Assistant will try to help!
+            </p>
+            <div>
+                <label for="productName" class="block text-sm font-medium text-wayfair-purple mb-1">Product Name / ID:</label>
+                <input type="text" id="productName" name="productName" placeholder="E.g., 'Industrial Bookshelf SKU12345'">
+            </div>
+            <div>
+                <label for="assemblyQuestion" class="block text-sm font-medium text-wayfair-purple mb-1">Your Assembly Question:</label>
+                <textarea id="assemblyQuestion" name="assemblyQuestion" rows="3" placeholder="E.g., 'How do I attach the top shelf?' or 'Tips for aligning the doors.'"></textarea>
+            </div>
+            <button id="getGeminiTipsButton" class="flex items-center justify-center w-full md:w-auto">
+                <span id="buttonText">Get Tips ✨</span>
+                <div id="loadingSpinner" class="loading-spinner hidden ml-2"></div>
+            </button>
+            <div id="geminiResponseArea" class="text-cast-iron">
+                Your assembly tips will appear here...
+            </div>
+             <p class="mt-3 text-xs text-cast-iron text-center">Powered by Gemini API. Responses are AI-generated and for guidance only.</p>
+        </section>
+
+
+        <section id="impact" class="card">
+            <h2 class="text-3xl font-semibold mb-8 text-center">Potential Impact: <span class="accent-highlight-purple">Happier Customers,</span> <span class="accent-highlight-purple">Healthier Bottom Line</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-wayfair-purple">Customer Experience (CX) Wins</h3>
+                    <div class="space-y-3">
+                        <div class="benefit-card"><p class="text-cast-iron">Reduces assembly time & frustration significantly.</p></div>
+                        <div class="benefit-card"><p class="text-cast-iron">Increases product satisfaction and confidence in Wayfair.</p></div>
+                        <div class="benefit-card"><p class="text-cast-iron">Empowers customers, fostering a sense of accomplishment.</p></div>
+                        <div class="benefit-card"><p class="text-cast-iron">Improves overall brand perception and loyalty.</p></div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueImpactChart"></canvas>
+                     <p class="mt-2 text-xs text-cast-iron text-center">Hypothetical distribution of positive financial impacts from improved assembly experience.</p>
+                </div>
+            </div>
+             <div class="mt-8">
+                <h3 class="text-2xl font-semibold mb-4 text-wayfair-purple text-center md:text-left">Revenue & Efficiency Gains</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-accent-purple p-4 rounded-lg"><p class="text-cast-iron">Lowers return rates due to assembly difficulties.</p></div>
+                    <div class="bg-accent-purple p-4 rounded-lg"><p class="text-cast-iron">Decreases volume of assembly-related customer service inquiries (cost saving).</p></div>
+                    <div class="bg-accent-purple p-4 rounded-lg"><p class="text-cast-iron">Improves product ratings & reviews, leading to future sales.</p></div>
+                    <div class="bg-accent-purple p-4 rounded-lg"><p class="text-cast-iron">Potential to reduce costs associated with return processing and damaged goods.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="winner" class="card">
+            <h2 class="text-3xl font-semibold mb-6 text-center">Why This Idea is a <span class="accent-main-purple">Winner</span> for Wayfair</h2>
+            <p class="text-lg mb-8 text-center text-cast-iron">
+                The Wayfair Assembly Assistant directly addresses key strategic priorities by enhancing customer experience, improving operational efficiency, and strengthening brand trust.
+            </p>
+            <div class="space-y-3">
+                <div class="winner-item">
+                    <span class="winner-icon">🎯</span>
+                    <p class="text-cast-iron"><strong>Solves a Major, Universal Customer Pain Point:</strong> Directly addresses a common frustration in the furniture buying journey.</p>
+                </div>
+                <div class="winner-item">
+                    <span class="winner-icon">📈</span>
+                    <p class="text-cast-iron"><strong>Direct & Measurable Impact:</strong> Clear link to reduced returns, lower service costs, and improved CSAT/NPS.</p>
+                </div>
+                <div class="winner-item">
+                    <span class="winner-icon">💡</span>
+                    <p class="text-cast-iron"><strong>Innovative Post-Purchase Support:</strong> Leverages GenAI to enhance the customer lifecycle beyond just the sale.</p>
+                </div>
+                <div class="winner-item">
+                    <span class="winner-icon">⚙️</span>
+                    <p class="text-cast-iron"><strong>Highly Feasible & Scalable:</strong> Builds on existing AI chatbot technology and Wayfair's product information.</p>
+                </div>
+                <div class="winner-item">
+                    <span class="winner-icon">🤝</span>
+                    <p class="text-cast-iron"><strong>Strengthens Brand Trust:</strong> Positions Wayfair as a supportive partner, even after the box arrives.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="vision" class="card text-center bg-soft-purple">
+            <h2 class="text-3xl font-semibold mb-4 text-wayfair-purple">Vision: Building a Better Post-Purchase Journey</h2>
+            <p class="text-lg text-cast-iron">
+                The Wayfair Assembly Assistant is a foundational step towards a future where every customer interaction is seamless, supportive, and empowering. By leveraging GenAI, we can turn potential frustrations into moments of delight and build lasting customer loyalty.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="text-center mt-12 py-6 border-t border-gray-200">
+        
+    </footer>
+
+    <script>
+        function wrapLabels(labels, maxWidth) {
+            return labels.map(label => {
+                if (typeof label === 'string' && label.length > maxWidth) {
+                    const words = label.split(' ');
+                    const lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + ' ' + word).trim().length <= maxWidth) {
+                            currentLine = (currentLine + ' ' + word).trim();
+                        } else {
+                            if(currentLine.length > 0) lines.push(currentLine);
+                            currentLine = word;
+                        }
+                    });
+                    if(currentLine.length > 0) lines.push(currentLine);
+                    return lines.length > 0 ? lines : [label];
+                }
+                return [label];
+            });
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            if (!item || !item.chart.data.labels) return '';
+            let label = item.label || item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const commonChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { 
+                        font: { size: 11, family: "'Sofia Pro', 'Poppins', sans-serif" }, 
+                        color: '#363038', /* Cast Iron */
+                        boxWidth: 15, 
+                        padding: 10 
+                    }
+                },
+                tooltip: {
+                    callbacks: { title: tooltipTitleCallback },
+                    backgroundColor: 'rgba(54, 48, 56, 0.9)', /* Cast Iron with Alpha */
+                    titleFont: { size: 13, weight: 'bold', family: "'Sofia Pro', 'Poppins', sans-serif" },
+                    bodyFont: { size: 11, family: "'Sofia Pro', 'Poppins', sans-serif" },
+                    padding: 8,
+                    cornerRadius: 3,
+                    titleColor: '#FFFFFF', /* Wayfair White */
+                    bodyColor: '#FFFFFF' /* Wayfair White */
+                }
+            },
+            scales: {
+                y: { display: false, beginAtZero: true },
+                x: { display: false }
+            }
+        };
+
+        const revenueCtx = document.getElementById('revenueImpactChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'doughnut',
+            data: {
+                labels: wrapLabels(['Reduced Returns', 'Lower Service Call Costs', 'Increased Sales (Better Reviews)', 'Reduced Damage Costs'], 20),
+                datasets: [{
+                    label: 'Hypothetical Financial Impact Areas',
+                    data: [40, 30, 20, 10], 
+                    backgroundColor: [
+                        '#7B189F', /* Wayfair Purple */
+                        '#C30016', /* Promo Red */
+                        '#F2DEFF', /* Accent Purple */
+                        '#F6F0F0'  /* Wayfair Neutral */
+                    ],
+                    borderColor: ['#FFFFFF'], /* Wayfair White */
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...commonChartOptions,
+                cutout: '60%',
+            }
+        });
+
+        // Gemini API Integration
+        const getGeminiTipsButton = document.getElementById('getGeminiTipsButton');
+        const productNameInput = document.getElementById('productName');
+        const assemblyQuestionInput = document.getElementById('assemblyQuestion');
+        const geminiResponseArea = document.getElementById('geminiResponseArea');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
+
+        getGeminiTipsButton.addEventListener('click', async () => {
+            const productName = productNameInput.value.trim();
+            const userQuestion = assemblyQuestionInput.value.trim();
+
+            if (!productName || !userQuestion) {
+                geminiResponseArea.textContent = 'Please enter both product name and your assembly question.';
+                return;
+            }
+
+            geminiResponseArea.textContent = '';
+            loadingSpinner.classList.remove('hidden');
+            buttonText.textContent = 'Getting Tips...';
+            getGeminiTipsButton.disabled = true;
+
+            const prompt = `You are a helpful Wayfair Assembly Assistant. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate.`;
+            
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Left empty as per instructions for Canvas environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Gemini API Error:', errorData);
+                    geminiResponseArea.textContent = `Sorry, there was an error getting tips (Status: ${response.status}). Please try again later. Details: ${errorData.error?.message || 'Unknown error'}`;
+                } else {
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        geminiResponseArea.textContent = text;
+                    } else {
+                        geminiResponseArea.textContent = 'Sorry, I could not generate tips at this moment. The response from the AI was not as expected.';
+                        console.error('Unexpected Gemini API response structure:', result);
+                    }
+                }
+            } catch (error) {
+                console.error('Network or other error calling Gemini API:', error);
+                geminiResponseArea.textContent = 'An error occurred while trying to get tips. Please check your network connection and try again.';
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = 'Get Tips ✨';
+                getGeminiTipsButton.disabled = false;
+            }
+        });
+
+    </script>
+</body>
+</html>
