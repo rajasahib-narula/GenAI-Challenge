@@ -209,9 +209,9 @@
         </section>
 
         <section id="solution" class="card">
-            <h2 class="text-3xl font-semibold mb-6 text-center">Our GenAI Solution: The <span class="accent-main-purple">Assembly Assistant</span></h2>
+            <h2 class="text-3xl font-semibold mb-6 text-center">Our GenAI Solution: The <span class="accent-main-purple"></span></h2>
             <p class="text-lg mb-4 text-center text-cast-iron">
-                Introducing the Wayfair Assembly Assistant – an AI-powered chatbot designed to transform the assembly experience. It's easily accessible via a QR code on product packaging or within the Wayfair app/website post-purchase.
+                Introducing the Wayfair Build Buddy – an AI-powered chatbot designed to transform the assembly experience. It's easily accessible via a QR code on product packaging or within the Wayfair app/website post-purchase.
             </p>
             <div class="text-center mb-6">
                 <span class="llm-tag">Powered by Gemini</span>
@@ -312,7 +312,7 @@
         <section id="winner" class="card">
             <h2 class="text-3xl font-semibold mb-6 text-center">Why This Idea is a <span class="accent-main-purple">Winner</span> for Wayfair</h2>
             <p class="text-lg mb-8 text-center text-cast-iron">
-                The Wayfair Assembly Assistant directly addresses key strategic priorities by enhancing customer experience, improving operational efficiency, and strengthening brand trust.
+                The Wayfair Build Buddy directly addresses key strategic priorities by enhancing customer experience, improving operational efficiency, and strengthening brand trust.
             </p>
             <div class="space-y-3">
                 <div class="winner-item">
@@ -341,7 +341,7 @@
         <section id="vision" class="card text-center bg-soft-purple">
             <h2 class="text-3xl font-semibold mb-4 text-wayfair-purple">Vision: Building a Better Post-Purchase Journey</h2>
             <p class="text-lg text-cast-iron">
-                The Wayfair Assembly Assistant is a foundational step towards a future where every customer interaction is seamless, supportive, and empowering. By leveraging GenAI, we can turn potential frustrations into moments of delight and build lasting customer loyalty.
+                The Wayfair Build Buddy is a foundational step towards a future where every customer interaction is seamless, supportive, and empowering. By leveraging GenAI, we can turn potential frustrations into moments of delight and build lasting customer loyalty.
             </p>
         </section>
 
@@ -459,7 +459,7 @@
             buttonText.textContent = 'Getting Tips...';
             getGeminiTipsButton.disabled = true;
 
-            const prompt = `You are a helpful Wayfair Assembly Assistant. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate.`;
+            const prompt = `You are a helpful Wayfair Build Buddy. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate.`;
             
             let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
             const payload = { contents: chatHistory };
