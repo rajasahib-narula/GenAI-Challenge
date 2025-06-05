@@ -453,60 +453,61 @@
         const loadingSpinner = document.getElementById('loadingSpinner');
         const buttonText = document.getElementById('buttonText');
 
-        getGeminiTipsButton.addEventListener('click', async () => {
-            const productName = productNameInput.value.trim();
-            const userQuestion = assemblyQuestionInput.value.trim();
+        if (getGeminiTipsButton) {
+            getGeminiTipsButton.addEventListener('click', async () => {
+                const productName = productNameInput.value.trim();
+                const userQuestion = assemblyQuestionInput.value.trim();
 
-            if (!productName || !userQuestion) {
-                geminiResponseArea.textContent = 'Please enter both product name and your assembly question.';
-                return;
-            }
-
-            geminiResponseArea.textContent = '';
-            loadingSpinner.classList.remove('hidden');
-            buttonText.textContent = 'Getting Tips...';
-            getGeminiTipsButton.disabled = true;
-
-            const prompt = `You are a helpful Wayfair Build Buddy, an AI-Powered Assembly Assistant. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate. Use Markdown for bolding important terms with double asterisks.`;
-            
-            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-            const payload = { contents: chatHistory };
-            const apiKey = "AIzaSyAgSSGtm0YQncPaS3lpI6pSwNu3Z6wDVAU";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Gemini API Error:', errorData);
-                    geminiResponseArea.textContent = `Sorry, there was an error getting tips (Status: ${response.status}). Please try again later. Details: ${errorData.error?.message || 'Unknown error'}`;
-                } else {
-                    const result = await response.json();
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        geminiResponseArea.textContent = renderMarkdownBold(text);
-                    } else {
-                        geminiResponseArea.textContent = 'Sorry, I could not generate tips at this moment. The response from the AI was not as expected.';
-                        console.error('Unexpected Gemini API response structure:', result);
-                    }
+                if (!productName || !userQuestion) {
+                    geminiResponseArea.innerHTML = '<p>Please enter both product name and your assembly question.</p>';
+                    return;
                 }
-            } catch (error) {
-                console.error('Network or other error calling Gemini API:', error);
-                geminiResponseArea.textContent = 'An error occurred while trying to get tips. Please check your network connection and try again.';
-            } finally {
-                loadingSpinner.classList.add('hidden');
-                buttonText.textContent = 'Get Tips ✨';
-                getGeminiTipsButton.disabled = false;
-            }
-        });
 
+                geminiResponseArea.innerHTML = '';
+                loadingSpinner.classList.remove('hidden');
+                buttonText.textContent = 'Getting Tips...';
+                getGeminiTipsButton.disabled = true;
+
+                const prompt = `You are a helpful Wayfair Build Buddy, an AI-Powered Assembly Assistant. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate. Use Markdown for bolding important terms with double asterisks.`;
+                
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Gemini API Error (Tips):', errorData);
+                        geminiResponseArea.innerHTML = `<p>Sorry, there was an error getting tips (Status: ${response.status}). Please try again later. Details: ${errorData.error?.message || 'Unknown error'}</p>`;
+                    } else {
+                        const result = await response.json();
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const rawText = result.candidates[0].content.parts[0].text;
+                            geminiResponseArea.innerHTML = renderMarkdownBold(rawText);
+                        } else {
+                            geminiResponseArea.innerHTML = '<p>Sorry, I could not generate tips at this moment. The response from the AI was not as expected.</p>';
+                            console.error('Unexpected Gemini API response structure (Tips):', result);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Network or other error calling Gemini API (Tips):', error);
+                    geminiResponseArea.innerHTML = '<p>An error occurred while trying to get tips. Please check your network connection and try again.</p>';
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                    buttonText.textContent = 'Get Tips ✨';
+                    getGeminiTipsButton.disabled = false;
+                }
+            });
+        }
     </script>
 </body>
 </html>
