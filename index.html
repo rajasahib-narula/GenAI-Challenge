@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wayfair Build Buddy - GenAI Innovation</title>
+    <title>Wayfair Build Buddy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -145,7 +145,7 @@
             cursor: not-allowed;
         }
         #buttonText {
-            color: #FFFFFF; /* Ensure "Get Tips" text is white */
+            color: #FFFFFF;
         }
         #geminiResponseArea {
             margin-top: 1rem;
@@ -154,7 +154,11 @@
             border-radius: 0.375rem; /* rounded-md */
             border: 1px dashed #F2DEFF; /* Accent Purple */
             min-height: 50px;
-            white-space: pre-wrap; /* To respect newlines from LLM */
+            white-space: pre-wrap;
+        }
+        #geminiResponseArea strong { /* Style for rendered bold text */
+            font-weight: 600; /* Semibold, or use 700 for bold */
+            color: #5C107A; /* Darker Wayfair Purple for emphasis */
         }
         .loading-spinner {
             border: 4px solid #F2DEFF; /* Accent Purple */
@@ -209,9 +213,9 @@
         </section>
 
         <section id="solution" class="card">
-            <h2 class="text-3xl font-semibold mb-6 text-center">Our GenAI Solution: The Build Buddy<span class="accent-main-purple"></span></h2>
+            <h2 class="text-3xl font-semibold mb-6 text-center">Our GenAI Solution: Build Buddy<span class="accent-main-purple"></span></h2>
             <p class="text-lg mb-4 text-center text-cast-iron">
-                Introducing the Wayfair Build Buddy – an AI-powered chatbot designed to transform the assembly experience. It's easily accessible via a QR code on product packaging or within the Wayfair app/website post-purchase.
+                Introducing Wayfair Build Buddy – your AI-powered chatbot designed to transform the assembly experience. It's easily accessible via a QR code on product packaging or within the Wayfair app/website post-purchase.
             </p>
             <div class="text-center mb-6">
                 <span class="llm-tag">Powered by Gemini</span>
@@ -264,11 +268,11 @@
             </p>
             <div>
                 <label for="productName" class="block text-sm font-medium text-wayfair-purple mb-1">Product Name / ID:</label>
-                <input type="text" id="productName" name="productName" placeholder="E.g., 'Industrial Bookshelf SKU12345'">
+                <input type="text" id="productName" name="productName" placeholder="E.g., 'Coffee Table SKU12345'">
             </div>
             <div>
                 <label for="assemblyQuestion" class="block text-sm font-medium text-wayfair-purple mb-1">Your Assembly Question:</label>
-                <textarea id="assemblyQuestion" name="assemblyQuestion" rows="3" placeholder="E.g., 'How do I attach the top shelf?' or 'Tips for aligning the doors.'"></textarea>
+                <textarea id="assemblyQuestion" name="assemblyQuestion" rows="3" placeholder="E.g., 'How do I attach the lower shelf?' or 'Tips for aligning the side frames.'"></textarea>
             </div>
             <button id="getGeminiTipsButton" class="flex items-center justify-center w-full md:w-auto">
                 <span id="buttonText">Get Tips ✨</span>
@@ -312,7 +316,7 @@
         <section id="winner" class="card">
             <h2 class="text-3xl font-semibold mb-6 text-center">Why This Idea is a <span class="accent-main-purple">Winner</span> for Wayfair</h2>
             <p class="text-lg mb-8 text-center text-cast-iron">
-                The Wayfair Build Buddy directly addresses key strategic priorities by enhancing customer experience, improving operational efficiency, and strengthening brand trust.
+            Wayfair Build Buddy directly addresses key strategic priorities by enhancing customer experience, improving operational efficiency, and strengthening brand trust.
             </p>
             <div class="space-y-3">
                 <div class="winner-item">
@@ -341,7 +345,7 @@
         <section id="vision" class="card text-center bg-soft-purple">
             <h2 class="text-3xl font-semibold mb-4 text-wayfair-purple">Vision: Building a Better Post-Purchase Journey</h2>
             <p class="text-lg text-cast-iron">
-                The Wayfair Build Buddy is a foundational step towards a future where every customer interaction is seamless, supportive, and empowering. By leveraging GenAI, we can turn potential frustrations into moments of delight and build lasting customer loyalty.
+            Wayfair Build Buddy is a foundational step towards a future where every customer interaction is seamless, supportive, and empowering. By leveraging GenAI, we can turn potential frustrations into moments of delight and build lasting customer loyalty.
             </p>
         </section>
 
@@ -436,7 +440,11 @@
                 cutout: '60%',
             }
         });
-
+        // Function to convert **bold** Markdown to <strong>HTML</strong>
+        function renderMarkdownBold(markdownText) {
+            if (typeof markdownText !== 'string') return '';
+            return markdownText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
         // Gemini API Integration
         const getGeminiTipsButton = document.getElementById('getGeminiTipsButton');
         const productNameInput = document.getElementById('productName');
@@ -459,7 +467,7 @@
             buttonText.textContent = 'Getting Tips...';
             getGeminiTipsButton.disabled = true;
 
-            const prompt = `You are a helpful Wayfair Build Buddy. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate.`;
+            const prompt = `You are a helpful Wayfair Build Buddy, an AI-Powered Assembly Assistant. A customer is assembling "${productName}" and has a question about: "${userQuestion}". Provide 2-3 concise, actionable tips or clarifications to help them. If the question is about a specific step, focus on that. If it's general, provide overall tips for that product type. Keep the tone friendly and encouraging. Format your response with clear bullet points or numbered steps if appropriate. Use Markdown for bolding important terms with double asterisks.`;
             
             let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
             const payload = { contents: chatHistory };
@@ -483,7 +491,7 @@
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const text = result.candidates[0].content.parts[0].text;
-                        geminiResponseArea.textContent = text;
+                        geminiResponseArea.textContent = renderMarkdownBold(text);
                     } else {
                         geminiResponseArea.textContent = 'Sorry, I could not generate tips at this moment. The response from the AI was not as expected.';
                         console.error('Unexpected Gemini API response structure:', result);
